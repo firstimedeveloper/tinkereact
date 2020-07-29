@@ -19,19 +19,40 @@ const LikeButton = (prop) => {
 
 }
 
-// const Search = (prop) => {
+const Search = (prop) => {
 
+  const handleChange = (event) => prop.setId(event.target.value)
 
-//   return (
-//     e('div',)
-//   )
-// }
+  const handleSubmit = (event) => {
+    //TODO: fetch api
+    event.preventDefault();
+  }
 
-const App = (prop) => {
-  const button = e(LikeButton, {name: prop.name})
+  const searchForm = e('form', {onSubmit: handleSubmit}, 
+    e('label', null, 'Video ID'),
+    e('input', {onChange: handleChange}),
+    e('button', {type: 'submit'}, 'Search')
+  )    
 
   return (
-    e('div', {className:'like-button'}, button)
+    searchForm
+  )
+}
+
+const App = (prop) => {
+  const [id, setId] = React.useState('')
+
+
+  // const button = e(LikeButton, {name: prop.name})
+
+  const fragment = e(React.Fragment, null,
+    e('div', {className: 'search'}, e(Search, {setId})),
+    id ? e('div', null, 'www.youtube.com/watch?v=', id) : ''
+  )
+
+  return (
+    // e('div', {className:'like-button'}, button)
+    fragment
   )
 }
 
