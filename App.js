@@ -19,18 +19,52 @@ const LikeButton = (prop) => {
 
 }
 
-const Search = (prop) => {
+const fetchDataApi = (prop) => {
+  const [data, setData] = React.useState('')
+  const [isLoading, setIsLoading] = React.useState(false)
+  const [isError, setIsError] = React.useState(false)
+}
 
-  const handleChange = (event) => prop.setId(event.target.value)
+const Search = (prop) => {
+  const [id, setId] = React.useState('')
+  const [lang, setLang] = React.useState('')
+  const [tlang, setTlang] = React.useState('')
+
+  const handleChange = (event) => setId(event.target.value)
+
+  const handleLangChange = (event) => setLang(event.target.value)
 
   const handleSubmit = (event) => {
     //TODO: fetch api
+    if (!lang) {
+      makeUrl('list')
+    } else {
+      makeUrl('transcript')
+    }
     event.preventDefault();
+  }
+
+  const makeUrl = (action) => {
+    if (id === '') {
+      prop.setUrl('')
+      return
+    }
+    if (action === 'list') {
+      prop.setUrl('http://video.google.com/timedtext?v=' + id + '&type=' + action)
+    }
+    if (action === "transcript") {
+      prop.setUrl('http://video.google.com/timedtext?v=' + id + '&lang=' + lang)
+    }
   }
 
   const searchForm = e('form', {onSubmit: handleSubmit}, 
     e('label', null, 'Video ID'),
     e('input', {onChange: handleChange}),
+    e('label', null, 'Subtitle language'),
+    e('select', {onChange: handleLangChange}, 
+      e('option', null, 'none'),
+      e('option', null, 'en'),
+      e('option', null, 'de')),
     e('button', {type: 'submit'}, 'Search')
   )    
 
@@ -40,14 +74,16 @@ const Search = (prop) => {
 }
 
 const App = (prop) => {
-  const [id, setId] = React.useState('')
+  
+  const [url, setUrl] = React.useState('')
 
 
+  
   // const button = e(LikeButton, {name: prop.name})
 
   const fragment = e(React.Fragment, null,
-    e('div', {className: 'search'}, e(Search, {setId})),
-    id ? e('div', null, 'www.youtube.com/watch?v=', id) : ''
+    e('div', {className: 'search'}, e(Search, {setUrl})),
+    url ? e('div', null, url) : ''
   )
 
   return (
