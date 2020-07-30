@@ -20,9 +20,33 @@ const LikeButton = (prop) => {
 }
 
 const fetchDataApi = (prop) => {
-  const [data, setData] = React.useState('')
+  const [data, setData] = React.useState()
   const [isLoading, setIsLoading] = React.useState(false)
   const [isError, setIsError] = React.useState(false)
+  const [url, setUrl] = React.useState('')
+
+
+  React.useEffect(() => {
+    console.log(url)
+    const fetchData = async () => {
+      setIsError(false)
+      setIsLoading(true)
+      try{
+        const result = await axios(url)
+        const data = xmlToJSON.parseString(result.data);
+        console.log(data)
+        console.log(data.transcript_list[0].track[0]._attr.lang_code)
+        setData(data)
+      } catch {
+        setIsError(true)
+      }
+      setIsLoading(false)
+    }
+
+    fetchData()
+  }, [url])
+
+  return {data, isLoading, isError, url, setUrl}
 }
 
 const Search = (prop) => {
@@ -74,16 +98,15 @@ const Search = (prop) => {
 }
 
 const App = (prop) => {
-  
-  const [url, setUrl] = React.useState('')
 
-
+  const {data, isLoading, isError, url, setUrl} = fetchDataApi()
   
   // const button = e(LikeButton, {name: prop.name})
 
+
   const fragment = e(React.Fragment, null,
     e('div', {className: 'search'}, e(Search, {setUrl})),
-    url ? e('div', null, url) : ''
+    url ? e('div', null, url) : '',
   )
 
   return (
@@ -94,3 +117,4 @@ const App = (prop) => {
 
 const domContainer = document.querySelector('#app');
 ReactDOM.render(e(App, {name: 'Jun'}), domContainer);
+
